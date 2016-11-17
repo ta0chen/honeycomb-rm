@@ -1,0 +1,252 @@
+package com.polycom.honeycomb.rm.utils;
+
+import com.polycom.honeycomb.rm.constants.HoneyRmConst;
+import com.polycom.honeycomb.rm.domain.Booking;
+import com.polycom.honeycomb.rm.domain.Resource;
+import com.polycom.honeycomb.rm.domain.ResourcePool;
+import com.polycom.honeycomb.rm.domain.User;
+import com.polycom.honeycomb.rm.repository.BookingMangoRepository;
+import com.polycom.honeycomb.rm.repository.ResourceMangoRepository;
+import com.polycom.honeycomb.rm.repository.ResourcePoolMangoRepository;
+import com.polycom.honeycomb.rm.repository.UserMongoRepository;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * Created by Tao Chen on 2016/11/11.
+ */
+@Configuration(value = "commonUtils") public class CommonUtils {
+    private static org.slf4j.Logger LOGGER = LoggerFactory
+            .getLogger(CommonUtils.class);
+    @Autowired UserMongoRepository         userMongoRepository;
+    @Autowired ResourceMangoRepository     resourceRepository;
+    @Autowired BookingMangoRepository      bookingRepository;
+    @Autowired ResourcePoolMangoRepository resourcePoolRepository;
+
+    public List<ResourcePool> getAvailableResourcePoolForLoginUser() {
+        List<ResourcePool> resourcePools = null;
+        String loginUser = SecurityUtils.getSubject().getPrincipal().toString();
+        User curLoginUsr = userMongoRepository.findByUserName(loginUser);
+
+        if (loginUser.equals(HoneyRmConst.ADMINISTRATOR)) {
+            resourcePools = resourcePoolRepository.findAll();
+        } else {
+            resourcePools = resourcePoolRepository.findAll().stream()
+                    .filter(x -> Arrays.asList(curLoginUsr.getPoolList())
+                            .contains(x.getName()))
+                    .collect(Collectors.toList());
+        }
+        return resourcePools;
+    }
+
+    public String[] getLoginUsersPoolList() {
+        String[] poolList = null;
+        String loginUser = SecurityUtils.getSubject().getPrincipal().toString();
+        User curLoginUsr = userMongoRepository.findByUserName(loginUser);
+
+        if (!loginUser.equals(HoneyRmConst.ADMINISTRATOR)) {
+            poolList = curLoginUsr.getPoolList();
+        }
+        return poolList;
+    }
+
+    public List<Resource> findResourceAccordingToPoolList(String[] poolList) {
+        return resourceRepository.findAll().stream()
+                .filter(x -> Arrays.asList(poolList).contains(x.getPoolId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve all available resources belong to the same pools with the login user
+     *
+     * @return The list of the available resources
+     */
+    public List<Resource> getAvailableResourcesForLoginUser() {
+        List<Resource> resources = new ArrayList<Resource>();
+        String[] poolList = null;
+        String loginUser = SecurityUtils.getSubject().getPrincipal().toString();
+        User curLoginUsr = userMongoRepository.findByUserName(loginUser);
+
+        if (!loginUser.equals(HoneyRmConst.ADMINISTRATOR)) {
+            poolList = curLoginUsr.getPoolList();
+        }
+
+        if (poolList == null) {
+            resources = resourceRepository.findAll();
+        } else {
+            resources = findResourceAccordingToPoolList(poolList);
+        }
+
+        return resources;
+    }
+
+    /**
+     * Find the resource in a list by the ID
+     *
+     * @param resources The resource list
+     * @param id        The resource ID
+     * @return The expected resource
+     */
+    public Optional<Resource> findResourceById(List<Resource> resources,
+            String id) {
+        Optional<Resource> resource = resources.stream()
+                .filter(x -> x.getId().equals(id)).findAny();
+
+        if (!resource.isPresent()) {
+            LOGGER.error("The resource cannot be retrieved by ID: " + id);
+        }
+        return resource;
+    }
+
+    /**
+     * Find the resource in a list by the pool name
+     *
+     * @param resources The resource list
+     * @param name      The pool name
+     * @return The expected resource
+     */
+    public List<Resource> findResourceByPoolName(List<Resource> resources,
+            String name) {
+        List<Resource> resource = resources.stream()
+                .filter(x -> x.getPoolId().equals(name))
+                .collect(Collectors.toList());
+
+        if (resource == null) {
+            LOGGER.error(
+                    "The resource cannot be found by the pool name: " + name);
+        }
+        return resource;
+    }
+
+    /**
+     * Find the resource in a list by the pool ID
+     *
+     * @param resources The resource list
+     * @param id        The pool ID
+     * @return The expected resource
+     */
+    public List<Resource> findResourceByPoolId(List<Resource> resources,
+            String id) {
+        List<Resource> resource = resources.stream()
+                .filter(x -> x.getId().equals(id)).collect(Collectors.toList());
+
+        if (resource == null) {
+            LOGGER.error("The resource cannot be found by the pool ID: " + id);
+        }
+        return resource;
+    }
+
+    /**
+     * Find the resource pool by the given resource
+     *
+     * @param resource The resource
+     * @return The resource pool
+     */
+    public ResourcePool findResourcePoolByResource(Resource resource) {
+        ResourcePool resourcePool = resourcePoolRepository
+                .findFirstByNameIgnoreCase(resource.getPoolId());
+
+        if (resourcePool == null) {
+            LOGGER.error("Cannot find the resource pool by the resource "
+                                 + resource);
+        }
+        return resourcePool;
+    }
+
+    /**
+     * Find the resource pool in a pool list by its ID
+     *
+     * @param pools The resource pool list
+     * @param id    The resource pool ID
+     * @return The resource pool
+     */
+    public Optional<ResourcePool> findResourcePoolById(List<ResourcePool> pools,
+            String id) {
+        Optional<ResourcePool> resourcePool = pools.stream()
+                .filter(x -> x.getId().equals(id)).findAny();
+
+        if (!resourcePool.isPresent()) {
+            LOGGER.error("Cannot find the resource pool by ID " + id);
+        }
+        return resourcePool;
+    }
+
+    /**
+     * Get all booking resources which is in the same pool with the login user
+     *
+     * @return The booking list
+     */
+    public List<Booking> getAllBookingResourceForLoginUser() {
+        List<Resource> resources = getAvailableResourcesForLoginUser();
+        List<Booking> bookingList = bookingRepository.findAll().stream()
+                .filter(x -> resources.contains(x.getResource()))
+                .collect(Collectors.toList());
+        ;
+        return bookingList;
+    }
+
+    /**
+     * Find the booking resource by the given booking ID
+     *
+     * @param bookingList The list of the booking resources
+     * @param id          The booking ID
+     * @return The booking object
+     */
+    public Optional<Booking> findBookingResourceById(List<Booking> bookingList,
+            String id) {
+        Optional<Booking> bookingResource = bookingList.stream()
+                .filter(x -> x.getId().equals(id)).findAny();
+
+        if (!bookingResource.isPresent()) {
+            LOGGER.error("Cannot find the booking resource by the ID " + id);
+        }
+        return bookingResource;
+    }
+
+    /**
+     * Get all available users who is in the same pool with the login user
+     *
+     * @return The user list
+     */
+    public List<User> getAvailableUsersForLoginUser() {
+        List<User> foundUsers = null;
+        String loginUser = SecurityUtils.getSubject().getPrincipal().toString();
+        String[] poolList = getLoginUsersPoolList();
+        if (loginUser.equals(HoneyRmConst.ADMINISTRATOR)) {
+            foundUsers = userMongoRepository.findAll();
+        } else {
+            //calculate the login user's pool
+            foundUsers = userMongoRepository.findAll().stream()
+                    .filter(x -> x.getPoolList() != null && Arrays
+                            .asList(x.getPoolList())
+                            .containsAll(Arrays.asList(poolList)))
+                    .collect(Collectors.toList());
+        }
+        return foundUsers;
+    }
+
+    /**
+     * Find the user in a user list by its ID
+     *
+     * @param users The user list
+     * @param id    The user ID
+     * @return The user
+     */
+    public Optional<User> findUserById(List<User> users, String id) {
+        Optional<User> user = users.stream().filter(x -> x.getId().equals(id))
+                .findAny();
+
+        if (!user.isPresent()) {
+            LOGGER.error("Cannot find the user by the ID " + id);
+        }
+        return user;
+    }
+}

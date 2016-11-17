@@ -1,0 +1,102 @@
+package com.polycom.honeycomb.rm.api;
+
+import com.polycom.honeycomb.rm.api.dto.BookingRequest;
+import com.polycom.honeycomb.rm.api.exception.BookingNotFoundException;
+import com.polycom.honeycomb.rm.api.exception.ResourceNotFoundException;
+import com.polycom.honeycomb.rm.domain.Booking;
+import com.polycom.honeycomb.rm.domain.Resource;
+import com.polycom.honeycomb.rm.repository.BookingMangoRepository;
+import com.polycom.honeycomb.rm.repository.ResourceMangoRepository;
+import com.polycom.honeycomb.rm.utils.CommonUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+/**
+ * Created by weigao on 20/9/2016.
+ */
+@RestController @RequestMapping(value = "/api/bookings")
+public class BookingController {
+    private static org.slf4j.Logger LOGGER = LoggerFactory
+            .getLogger(BookingController.class);
+
+    public static Predicate<Resource> matchBookingRequest(BookingRequest bookingRequest) {
+        return resource -> resource.getType().equals(bookingRequest.getType())
+                && resource.getBookingId() == null && Arrays
+                .asList(resource.getKeywords())
+                .containsAll(Arrays.asList(bookingRequest.getKeywords()));
+    }
+
+    @Autowired BookingMangoRepository bookingRepository;
+    @Autowired ResourceMangoRepository resourceRepository;
+    @Autowired @Qualifier("commonUtils") CommonUtils commonUtils;
+
+    @RequiresRoles(value = {
+            "ADMIN", "POOL_ADMIN", "POOL_USER" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Booking createBooking(@RequestBody BookingRequest bookingRequest) {
+        String loginUser = SecurityUtils.getSubject().getPrincipal().toString();
+        List<Resource> availableResources = commonUtils
+                .getAvailableResourcesForLoginUser();
+        Optional<Resource> foundResource = availableResources.stream()
+                .filter(matchBookingRequest(bookingRequest)).findAny();
+
+        if (!foundResource.isPresent()) {
+            throw new ResourceNotFoundException(bookingRequest);
+        }
+
+        Booking newBooking = new Booking();
+        newBooking.setStartTime(LocalDateTime.now());
+        newBooking.setResource(foundResource.get());
+        bookingRepository.save(newBooking);
+        foundResource.get().setBookingId(newBooking.getId());
+        foundResource.get().setOwner(loginUser);
+        resourceRepository.save(foundResource.get());
+
+        return newBooking;
+    }
+
+    @RequiresRoles(value = {
+            "ADMIN", "POOL_ADMIN", "POOL_USER" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.GET)
+    public Page<Booking> listBookings(Pageable pageable) {
+        List<Booking> bookingList = commonUtils
+                .getAllBookingResourceForLoginUser();
+
+        return new PageImpl<Booking>(bookingList);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBooking(@PathVariable("id") String id) {
+        List<Booking> bookingList = commonUtils
+                .getAllBookingResourceForLoginUser();
+
+        Optional<Booking> foundBooking = commonUtils
+                .findBookingResourceById(bookingList, id);
+
+        if (!foundBooking.isPresent()) {
+            throw new BookingNotFoundException(id);
+        }
+        Booking booking = foundBooking.get();
+        Resource resource = booking.getResource();
+        resource.setBookingId(null);
+        resourceRepository.save(resource);
+        bookingRepository.delete(id);
+    }
+}

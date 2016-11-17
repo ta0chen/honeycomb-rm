@@ -1,0 +1,54 @@
+[
+  {
+  "id" : "default",
+  "_class" : "com.polycom.honeycomb.rm.domain.ResourcePool",
+  "name" : "default",
+  "description" : "Default resource pool",
+  "resources" : []
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "POOL_OPERATOR",
+    "description" : "Create or delete pool"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "POOL_READER",
+    "description" : "Read the pool information"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "POOL_UPDATER",
+    "description" : "Update the pool information"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "RESOURCE_OPERATOR",
+    "description" : "Create or delete resources"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "RESOURCE_READER",
+    "description" : "Read the resource information"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "RESOURCE_UPDATER",
+    "description" : "Update the resources information"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "USER_OPERATOR",
+    "description" : "Create or delete user"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "USER_READER",
+    "description" : "Read the user information"
+  },
+  {
+    "_class" : "com.polycom.honeycomb.rm.domain.Permission",
+    "name" : "USER_UPDATER",
+    "description" : "Update the user information"
+  }
+]

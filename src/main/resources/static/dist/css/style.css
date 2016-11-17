@@ -1,0 +1,294 @@
+#video-background {
+/*  position: fixed;*/
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+}
+.video-text {
+    position: fixed;
+    left: 50%;
+    top: 40%;
+    margin-top: -187px;
+    margin-left: -600px;
+    text-align: center;
+    color: #fff;
+    width: 1200px;
+}
+.video-text h2 {
+    font-size:50px;
+}
+.video-text p {
+    font-size:22px;
+    margin-bottom: 40px;
+    color:#fff;
+}
+.slide-btn {
+    text-decoration: none;
+    color:#fff;
+    background: #59D446;
+    border-radius: 5px;
+}
+.video-text a {
+      text-decoration: none;
+      padding: 15px 40px;
+
+}
+#header-area .navbar-default {
+    background: transparent;
+    border: none;
+}
+#header-area .navbar-default .navbar-nav > .active > a{
+     background: transparent;
+}
+#header-area .navbar-default .navbar-nav > li > a , #header-area .navbar-default .navbar-brand{
+    color:#fff;
+}
+#why_visible {
+    padding: 50px 0px;
+}
+.page-title {
+    padding-bottom: 35px;
+}
+.page-title p {
+    font-size: 16px;
+    margin: 0 auto;
+    max-width: 762px;
+    line-height: 23px;
+}
+.page-title span{
+    color:#59D446;
+}
+.install-visible p{
+    padding-top: 50px;
+}
+section#showcase hgroup h2 {
+    font-size:40px;
+}
+section#showcase hgroup p {
+    font-size:17px;
+    color:#fff;
+}
+.cmbtn {
+    border-radius: 4px;
+    display: inline-block;
+    font-family: Lato,"Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+    font-size: 1.3em;
+    font-weight: 700;
+    line-height: 1.62em;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+.cmbtn.secondary.white {
+    background: rgba(0, 0, 0, 0) linear-gradient(to bottom, #fff 0px, #f7f7f7 100%) repeat scroll 0 0;
+    color: #19a9e5;
+    font-size: 16px;
+    font-weight: normal;
+    text-shadow: none;
+}
+.cmbtn.secondary {
+    padding: 14px 40px 15px;
+}
+#watch_map {
+    padding: 100px 0px;
+}
+.map-title {}
+.map-title p{
+    max-width: 750px;
+    margin: 0 auto;
+    font-size: 16px;
+    margin-bottom: 50px;
+    line-height: 23px;
+}
+
+#gmap {
+    width: 100%;
+    height: 400px;
+    position: relative;
+}
+.map-mobile {
+    position: absolute;
+    left: 0;
+  right: 0;
+  top: -300px;
+  bottom: 0;
+
+
+
+}
+.map-mobile img{
+    max-width: 200px;
+    max-height: 400px;
+     margin-bottom: 50px;
+
+}
+#gallary , #color {
+    padding: 75px 0px;
+    background: rgba(5,144,204,1);
+    background: -moz-linear-gradient(top, rgba(5,144,204,1) 0%, rgba(152,219,245,1) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(5,144,204,1)), color-stop(100%, rgba(152,219,245,1)));
+    background: -webkit-linear-gradient(top, rgba(5,144,204,1) 0%, rgba(152,219,245,1) 100%);
+    background: -o-linear-gradient(top, rgba(5,144,204,1) 0%, rgba(152,219,245,1) 100%);
+    background: -ms-linear-gradient(top, rgba(5,144,204,1) 0%, rgba(152,219,245,1) 100%);
+    background: linear-gradient(to bottom, rgba(5,144,204,1) 0%, rgba(152,219,245,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0590cc', endColorstr='#98dbf5', GradientType=0 );
+}
+.gallary-title {}
+.gallary-title p{
+    max-width: 750px;
+    margin: 0 auto;
+    line-height: 23px;
+    font-size: 16px;
+    color:#fff;
+
+}
+.gallary-title h2{
+    color:#fff;
+
+}
+.gallary-title a {
+    float: right;
+    padding: 25px 0px;
+
+}
+
+.single-carosal {
+    display:inline-block;
+    background: #fff;
+    margin-bottom: 13px;
+    border-radius: 4px;
+}
+.single-carosal img {
+    border: 8px solid #fff;
+
+    max-width: 373px;
+
+}
+.owl-item {
+/*    border: 10px solid #fff;*/
+/*    border-radius: 11px;*/
+    overflow: hidden;
+}
+
+.single-carosal > h2 {
+    font-size: 22px;
+    padding-left:10px;
+}
+.single-carosal > p {
+    padding-right: 18px;
+    padding-left:10px;
+}
+.single-carosal > a {
+    margin-bottom: 7px;
+    padding-left:10px;
+}
+.owl-theme .owl-controls .owl-buttons div {
+  padding: 5px 9px;
+}
+
+.owl-theme .owl-buttons i{
+  margin-top: 2px;
+}
+
+//To move navigation buttons outside use these settings:
+
+
+.owl-controls .owl-buttons div  {
+  position: absolute !important;
+}
+
+.owl-theme .owl-controls .owl-buttons .owl-prev{
+  left: -45px  ;
+  top: 555px ;
+}
+
+.owl-theme .owl-controls .owl-buttons .owl-next{
+  right: -45px;
+  top: 555px;
+}
+.video-title {
+    color:#fff;
+
+}
+.video-title h2{
+   margin-left: -100px;
+    padding: 50px 0px;
+}
+.single-video {
+    border: 20px solid #fff;
+    border-radius: 20px;
+}
+
+#support {
+    padding: 50px 0px;
+
+}
+.support-title p{
+    margin-bottom: 40px;
+}
+.support-title.text-center > a {
+    background: #0d94ce none repeat scroll 0 0;
+    border-radius: 5px;
+    color: #fff;
+    padding: 15px 35px;
+    text-decoration: none;
+}
+.left-support {
+    margin-top: 140px;
+    text-align: center;
+}
+.right-support {
+    margin-top: 140px;
+    text-align: center;
+}
+.sptime {
+    color: #0d94ce;
+    font-size: 70px;
+}
+.sptime span,.sptime span sup {
+    font-size: 50px;
+}
+.right-border {
+    border-left: 1px solid #ccc;
+}
+#promo {
+    padding: 50px 0px;
+    background: #4C4C4C;
+    color:#fff;
+}
+.promo-text p {
+    color:#fff;
+    max-width: 700px;
+    line-height: 20px;
+}
+.promo-button > a {
+    background: #5BBC2E none repeat scroll 0 0;
+    border-radius: 5px;
+    color: #fff;
+    padding: 15px 35px;
+    text-decoration: none;
+}
+#footer-top {
+    padding: 50px 0px;
+}
+.single-footer-two ul{ }
+.single-footer-two ul li {
+    padding-bottom: 6px;
+}
+.single-footer-two ul li a{
+    text-decoration: none;
+}
+.footer-social {
+  font-size:25px;
+}
+#footer {
+    padding: 10px 0px ;
+    background: #EAEAEA;
+}
+.footer-text p {
+    padding-top: 10px;
+
+}
+

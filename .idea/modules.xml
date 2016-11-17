@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/honeycomb-rm.iml" filepath="$PROJECT_DIR$/.idea/modules/honeycomb-rm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/honeycomb-rm_main.iml" filepath="$PROJECT_DIR$/.idea/modules/honeycomb-rm_main.iml" group="honeycomb-rm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/honeycomb-rm_test.iml" filepath="$PROJECT_DIR$/.idea/modules/honeycomb-rm_test.iml" group="honeycomb-rm" />
+    </modules>
+  </component>
+</project>

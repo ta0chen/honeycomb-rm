@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Resource Pool</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+          page. However, you can choose any other skin. Make sure you
+          apply the skin class to the body tag so the changes take effect.
+    -->
+    <link rel="stylesheet" href="dist/css/skins/skin-blue.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        .ui-widget *, .ui-widget input, .ui-widget select, .ui-widget button {
+            font-family: 'Helvetica Neue Light', 'Open Sans', Helvetica;
+            font-size: 14px;
+            font-weight: 300 !important;
+        }
+        .details-form-field input,
+        .details-form-field textarea,
+        .details-form-field select {
+            width: 250px;
+            float: right;
+        }
+        .details-form-field {
+            margin: 30px 0;
+        }
+        .details-form-field:first-child {
+            margin-top: 10px;
+        }
+        .details-form-field:last-child {
+            margin-bottom: 10px;
+        }
+        .details-form-field button {
+            display: block;
+            width: 100px;
+            margin: 100px auto 0;
+        }
+        input.error, select.error {
+            border: 1px solid #ff9999;
+            background: #ffeeee;
+        }
+        label.error {
+            float: right;
+            margin-left: 100px;
+            font-size: .8em;
+            color: #ff6666;
+        }
+        #userAccount {
+            float: right;
+            margin-top: 15px;
+            color: gainsboro;
+        }
+
+        #logout {
+            float: right;
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+
+</body>
+</html>

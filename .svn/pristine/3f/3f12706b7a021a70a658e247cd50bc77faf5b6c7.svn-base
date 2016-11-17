@@ -1,0 +1,203 @@
+package com.polycom.honeycomb.rm.api;
+
+import com.polycom.honeycomb.rm.api.dto.UserFindingRequest;
+import com.polycom.honeycomb.rm.api.exception.*;
+import com.polycom.honeycomb.rm.constants.HoneyRmConst;
+import com.polycom.honeycomb.rm.domain.ResourcePool;
+import com.polycom.honeycomb.rm.domain.Role;
+import com.polycom.honeycomb.rm.domain.User;
+import com.polycom.honeycomb.rm.repository.ResourcePoolMangoRepository;
+import com.polycom.honeycomb.rm.repository.RoleMongoRepository;
+import com.polycom.honeycomb.rm.repository.UserMongoRepository;
+import com.polycom.honeycomb.rm.utils.CommonUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+/**
+ * Created by Tao Chen on 2016/10/28.
+ */
+@RestController @RequestMapping(value = "/api/users")
+public class UserController {
+    private static org.slf4j.Logger LOGGER = LoggerFactory
+            .getLogger(UserController.class);
+
+    public static Predicate<User> matchUserFindingRequest(UserFindingRequest userFindingRequest) {
+        return user -> Arrays.asList(user.getPoolList())
+                .containsAll(Arrays.asList(userFindingRequest.getPoolList()));
+    }
+
+    @Autowired UserMongoRepository userMongoRepository;
+    @Autowired                           RoleMongoRepository         roleMongoRepository;
+    @Autowired
+                                         ResourcePoolMangoRepository resourcePoolRepository;
+    @Autowired @Qualifier("commonUtils")
+                                         CommonUtils                 commonUtils;
+
+    @RequiresRoles(value = {
+            "ADMIN", "POOL_ADMIN", "POOL_USER" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.GET)
+    public List<User> listAllUsers() {
+        List<User> foundUsers = commonUtils.getAvailableUsersForLoginUser();
+
+        //we have to remove the password before the user list return to the client
+        for (User user : foundUsers) {
+            user.setPassword(null);
+        }
+        return foundUsers;
+    }
+
+    @RequiresRoles(value = {
+            "ADMIN", "POOL_ADMIN", "POOL_USER" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.GET, value = "/poolName={poolName}")
+    public List<User> listPoolUsers(@PathVariable("poolName") String poolName) {
+        List<User> users = userMongoRepository.findAll();
+        List<User> foundUsers = users.stream()
+                .filter(x -> !x.getUserName().equals("admin") && Arrays
+                        .asList(x.getPoolList()).contains(poolName))
+                .collect(Collectors.toList());
+        if (foundUsers.isEmpty()) {
+            throw new UserNotFoundException("User in pool " + poolName);
+        }
+
+        //remove the password in the respond message
+        for (User user : foundUsers) {
+            user.setPassword(null);
+        }
+        return foundUsers;
+    }
+
+    @RequiresRoles(value = { "ADMIN", "POOL_ADMIN" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@RequestBody User user) {
+        User rtnUser = user;
+        user.setId(null);
+
+        //The pool list is mandatory for all user except admin
+        if (user.getPoolList() == null) {
+            throw new IllegalRequestException(user);
+        }
+
+        //check the user availability in the system to avoid duplicate
+        if (userMongoRepository.findByUserName(user.getUserName()) != null) {
+            throw new UserAlreadyExistsException(user.getUserName());
+        }
+
+        //set the user belonging pools
+        String[] poolAvailableForLoginusr = commonUtils.getLoginUsersPoolList();
+
+        if (poolAvailableForLoginusr != null && Arrays
+                .asList(poolAvailableForLoginusr)
+                .retainAll(Arrays.asList(user.getPoolList()))) {
+            throw new IllegalRequestException(user);
+        }
+
+        List<ResourcePool> foundResourcePools = populatePools(user.getPoolList());
+        if (foundResourcePools.isEmpty()) {
+            throw new ResourcePoolNotFoundException(String.valueOf(user.getPoolList()));
+        }
+
+        user.setBelongingPools(foundResourcePools);
+
+        //set the user roles
+        List<Role> foundRoles = populateRoles(user.getRoleList());
+        if (foundRoles.isEmpty()) {
+            throw new RoleNotFoundException(String.valueOf(user.getRoleList()));
+        }
+
+        user.setRoles(foundRoles);
+        userMongoRepository.save(user);
+
+        //remove the password to avoid it published to others
+        rtnUser.setPassword(null);
+        return rtnUser;
+    }
+
+    @RequiresRoles(value = { "ADMIN", "POOL_ADMIN" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable("id") String id) {
+        List<User> users = commonUtils.getAvailableUsersForLoginUser();
+        Optional<User> foundUser = commonUtils.findUserById(users, id);
+
+        if (!foundUser.isPresent()) {
+            throw new UserNotFoundException(id);
+        }
+        //should not allow deleting admin user
+        if (!foundUser.get().getUserName().equals(HoneyRmConst.ADMINISTRATOR))
+            userMongoRepository.delete(id);
+    }
+
+    @RequiresRoles(value = { "ADMIN", "POOL_ADMIN" }, logical = Logical.OR)
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable("id") String id,
+            @RequestBody User updateUser) {
+        List<User> users = commonUtils.getAvailableUsersForLoginUser();
+
+        Optional<User> foundUser = commonUtils.findUserById(users, id);
+
+        if (!foundUser.isPresent()) {
+            throw new UserNotFoundException(id);
+        }
+
+        updateUser.setId(id);
+        String[] poolAvailableForLoginusr = commonUtils.getLoginUsersPoolList();
+        if (poolAvailableForLoginusr != null && !Arrays
+                .asList(poolAvailableForLoginusr)
+                .contains(Arrays.asList(updateUser.getPoolList()))) {
+            throw new IllegalRequestException(updateUser);
+        }
+
+        //set the user belonging pools
+        List<ResourcePool> foundResourcePools = populatePools(updateUser
+                                                                      .getPoolList());
+        if (foundResourcePools.isEmpty()) {
+            throw new ResourcePoolNotFoundException(String.valueOf(updateUser
+                                                                           .getPoolList()));
+        }
+
+        updateUser.setBelongingPools(foundResourcePools);
+
+        //set the user roles
+        List<Role> foundRoles = populateRoles(updateUser.getRoleList());
+        if (foundRoles.isEmpty()) {
+            throw new RoleNotFoundException(String.valueOf(updateUser
+                                                                   .getRoleList()));
+        }
+
+        updateUser.setRoles(foundRoles);
+
+        //should not allow updating admin user
+        if (!updateUser.getUserName().equals(HoneyRmConst.ADMINISTRATOR))
+            userMongoRepository.save(updateUser);
+    }
+
+    public List<ResourcePool> populatePools(String[] poolList) {
+        List<ResourcePool> resourcePools = resourcePoolRepository.findAll();
+        List<ResourcePool> foundResourcePools = resourcePools.stream()
+                .filter(x -> Arrays.asList(poolList).contains(x.getName()))
+                .collect(Collectors.toList());
+
+        return foundResourcePools;
+    }
+
+    public List<Role> populateRoles(String[] roleList) {
+        List<Role> roles = roleMongoRepository.findAll();
+        List<Role> foundRoles = roles.stream()
+                .filter(x -> Arrays.asList(roleList).contains(x.getName()))
+                .collect(Collectors.toList());
+        return foundRoles;
+    }
+}
