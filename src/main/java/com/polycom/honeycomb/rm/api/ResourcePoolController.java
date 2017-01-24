@@ -28,11 +28,9 @@ import java.util.Optional;
 public class ResourcePoolController {
     private static org.slf4j.Logger LOGGER = LoggerFactory
             .getLogger(ResourcePoolController.class);
-    @Autowired                           ResourcePoolMangoRepository resourcePoolRepository;
-    @Autowired
-                                         ResourceMangoRepository     resourceRepository;
-    @Autowired @Qualifier("commonUtils")
-                                         CommonUtils                 commonUtils;
+    @Autowired ResourcePoolMangoRepository resourcePoolRepository;
+    @Autowired                           ResourceMangoRepository resourceRepository;
+    @Autowired @Qualifier("commonUtils") CommonUtils             commonUtils;
 
     @RequiresRoles("ADMIN") @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)

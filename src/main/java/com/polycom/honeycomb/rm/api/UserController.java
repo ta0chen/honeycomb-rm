@@ -37,9 +37,8 @@ public class UserController {
                 .containsAll(Arrays.asList(userFindingRequest.getPoolList()));
     }
 
-    @Autowired                           UserMongoRepository         userMongoRepository;
-    @Autowired
-                                         RoleMongoRepository         roleMongoRepository;
+    @Autowired UserMongoRepository userMongoRepository;
+    @Autowired                           RoleMongoRepository         roleMongoRepository;
     @Autowired
                                          ResourcePoolMangoRepository resourcePoolRepository;
     @Autowired @Qualifier("commonUtils")

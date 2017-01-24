@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.polycom.honeycomb:http-lib:1.0.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.polycom.honeycomb/http-lib/1.0.0/f746629fa3085c82242777c9b5b59d14ced32d94/http-lib-1.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.polycom.honeycomb/http-lib/1.0.0/9b967d859f2e45b8ee2ea07f794a6b76be766e0f/http-lib-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.polycom.honeycomb/http-lib/1.0.0/d455b830729cc79a9a1134d64ffc6a1c25991baf/http-lib-1.0.0-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.polycom.honeycomb/http-lib/1.0.0/f9cd65b624be97022ad94923081726257a00b6a9/http-lib-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,6 +1,0 @@
-spring.data.mongodb.uri=mongodb://172.21.98.16/test
-db_rebuild=true
-shiro.loginUrl = /index.html
-server.error.whitelabel.enabled = false
-spring.thymeleaf.mode=LEGACYHTML5
-spring.thymeleaf.cache=false
